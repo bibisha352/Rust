@@ -1,0 +1,70 @@
+A blank bot that simply goes online and prints logs can be written in just a few lines.
+
+Here is everything you need to do:
+
+### Step 1. Create a project and set up dependencies
+Open the terminal in VS Code and create a new project:
+```bash
+cargo new my_discord_bot
+cd my_discord_bot
+```
+
+Now open the Cargo.toml file and add the serenity library along with the tokio library for asynchrony. The [dependencies] section should look like this:
+
+```toml
+[dependencies]
+serenity = "0.12"
+tokio = { version = "1.0", features = ["full"] }
+```
+
+---
+
+### Step 2. Bot Code (src/main.rs)
+Clear the src/main.rs file and paste this ready-to-use code. It does exactly the same thing: starts up, authenticates, and silently stays online.
+
+```rust
+use serenity::prelude::*;
+use serenity::model::gateway::Ready;
+use serenity::async_trait;
+
+// Create a structure to handle events from Discord
+struct Handler;
+
+#[async_trait]
+impl EventHandler for Handler {
+    // This event fires once when the bot successfully connects
+    async fn ready(&self, _: Context, ready: Ready) {
+        println!("Bot successfully started as: {}", ready.user.name);
+        println!("The bot is just sitting online using Rust and doing nothing.");
+    }
+}
+
+#[tokio::main]
+async fn main() {
+    // Insert your bot token here
+    let token = "INSERT_YOUR_TOKEN_HERE";
+
+    // Configure Intents. Basic intents are enough for a blank bot
+    let intents = GatewayIntents::GUILDS;
+
+    // Create the bot client
+    let mut client = Client::builder(&token, intents)
+        .event_handler(Handler)
+        .await
+        .expect("Error creating client");
+
+    // Start the bot. It will stay online indefinitely until you close the terminal
+    if let Err(why) = client.start().await {
+        println!("Bot error: {:?}", why);
+    }
+}
+```
+
+---
+
+### Step 3. Launch
+In the VS Code terminal, simply run the following command:
+```bash
+cargo run
+```
+Rust will automatically download the required libraries from the internet, compile the project, and launch the bot. In Rust, this happens entirely automatically — no CMake files or manual linker configurations are needed.
